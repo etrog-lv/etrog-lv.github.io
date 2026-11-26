@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>תורנות ניקיון</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-family:'Rubik',-apple-system,'Segoe UI',Arial,sans-serif}
+body{min-height:100vh;background:linear-gradient(160deg,#fdf2f8 0%,#eff6ff 30%,#ecfdf5 62%,#fffbeb 100%);background-attachment:fixed;color:#1e293b;padding:calc(20px + env(safe-area-inset-top)) 14px calc(34px + env(safe-area-inset-bottom))}
+.wrap{max-width:480px;margin:0 auto}
+.logo{display:flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:50%;margin-bottom:14px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85);box-shadow:0 8px 22px rgba(100,116,180,.16);margin-inline:auto}
+.logo img{width:62px;height:62px;object-fit:contain}
+.card{background:rgba(255,255,255,.62);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.85);border-radius:26px;box-shadow:0 10px 34px rgba(100,116,180,.13);padding:20px 18px;margin-bottom:16px}
+header.card{text-align:center;padding:26px 18px 22px}
+h1{font-size:30px;font-weight:800;letter-spacing:-.3px;background:linear-gradient(90deg,#be185d,#6d28d9,#0369a1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin-top:6px;font-size:14px;color:#64748b;font-weight:500}
+h2{font-size:17px;font-weight:700;color:#334155;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+h2 .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.chip{display:inline-block;border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;white-space:nowrap}
+.t-A{background:#dbeafe;color:#1d4ed8}.t-B{background:#fce7f3;color:#be185d}.t-C{background:#dcfce7;color:#15803d}
+.today{text-align:center}
+.today .lbl{font-size:13px;color:#64748b;font-weight:600;margin-bottom:4px}
+.today .dt{font-size:20px;font-weight:800;color:#0f172a;margin-bottom:12px}
+.today .ppl{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.today .chip{font-size:18px;padding:7px 18px}
+.today .none{font-size:15px;color:#475569;font-weight:600}
+.tasks li{list-style:none;font-size:14.5px;color:#334155;font-weight:500;margin:8px 0;display:flex;gap:9px;line-height:1.5}
+.tasks li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:#0369a1;margin-top:7px}
+.frow{display:flex;align-items:center;gap:10px;padding:7px 2px}
+.frow+.frow{border-top:1px solid rgba(148,163,184,.16)}
+.frow .nm{flex:none;width:122px}
+.bar-wrap{flex:1;height:10px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden}
+.bar{height:100%;border-radius:999px}
+.cnt{flex:none;width:58px;text-align:left;font-size:12px;color:#475569;font-weight:500}.cnt b{font-size:16px;color:#0f172a;font-weight:800}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:12px;color:#64748b}
+.legend span{display:flex;align-items:center;gap:5px}.sw{width:10px;height:10px;border-radius:3px;display:inline-block}
+select{width:100%;font-family:inherit;font-size:15px;font-weight:600;padding:10px 12px;border-radius:14px;border:1px solid rgba(148,163,184,.4);background:rgba(255,255,255,.8);color:#334155;margin-bottom:10px}
+.erow{display:flex;align-items:center;gap:10px;padding:10px 2px}
+.erow+.erow{border-top:1px solid rgba(148,163,184,.16)}
+.date{flex:none;width:84px}.date b{display:block;font-size:17px;font-weight:800;color:#0f172a;font-variant-numeric:tabular-nums}.date span{font-size:12px;color:#64748b;font-weight:500}
+.who{flex:1;display:flex;flex-wrap:wrap;gap:5px;align-items:center}.who .chip{padding:3px 11px;font-size:13.5px}
+.erow.past{opacity:.55}.erow.past .date b{color:#94a3b8}
+.erow.now{background:#fef9c3;border-radius:14px;padding-inline:8px;margin-block:2px}
+.erow.dim{opacity:.25}
+.wk{font-size:12px;font-weight:700;color:#94a3b8;margin:14px 0 2px}.wk:first-child{margin-top:0}
+.pill{font-size:12px;font-weight:700;color:#0f766e;background:#ccfbf1;border-radius:999px;padding:3px 10px}
+.off{font-size:13px;font-weight:600;color:#64748b;background:rgba(148,163,184,.16);border-radius:999px;padding:4px 13px}
+.small{font-size:12.5px;color:#64748b;line-height:1.6;font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="card">
+  <div class="logo"><img src="/logo.png" alt="סמל קורס אתרוג ל״ו"></div>
+  <h1>תורנות ניקיון</h1>
+  <div class="sub">חד״סים · 28.10 עד 30.11</div>
+</header>
+
+<section class="card today" id="today"></section>
+
+<section class="card">
+  <h2><span class="dot" style="background:#0369a1"></span>מה כוללת התורנות</h2>
+  <ul class="tasks">
+    <li>מתחילה אחרי 20:00</li>
+    <li>זריקת זבל והחלפה לשקיות חדשות</li>
+    <li>טאטוא של האזורים המשותפים - המטבחון והחוץ</li>
+    <li>ניקוי קל של המטבחון</li>
+  </ul>
+  <div class="small" style="margin-top:10px">ראשון עד חמישי: שניים בכל יום, ממגמות שונות. שישי: סוגרי השוש של אותו שבוע.</div>
+</section>
+
+<section class="card">
+  <h2><span class="dot" style="background:#6d28d9"></span>כמה תורנויות לכל אחד</h2>
+  <div id="fair"></div>
+  <div class="legend">
+    <span><span class="sw" style="background:#3b82f6"></span>אופק</span>
+    <span><span class="sw" style="background:#ec4899"></span>ליאור</span>
+    <span><span class="sw" style="background:#22c55e"></span>אורי</span>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="dot" style="background:#be185d"></span>לוח התורנויות</h2>
+  <select id="who"><option value="">כולם</option></select>
+  <div id="sched"></div>
+</section>
+</div>
+<script src="data.js?v=2"></script>
+<script>
+(function(){
+  const DAYS=["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+  const MON=["ינו׳","פבר׳","מרץ","אפר׳","מאי","יוני","יולי","אוג׳","ספט׳","אוק׳","נוב׳","דצמ׳"];
+  const COL={A:"#3b82f6",B:"#ec4899",C:"#22c55e"};
+  const chip=n=>`<span class="chip t-${TRACK[n]}">${n}</span>`;
+  const iso=new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Jerusalem"}).format(new Date());
+  const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(Date.UTC(y,m-1,d))};
+  const fmt=s=>{const d=parse(s);return {d:d.getUTCDate()+"."+(d.getUTCMonth()+1),w:"יום "+DAYS[d.getUTCDay()]}};
+  const sel=document.getElementById("who");
+  Object.keys(TRACK).slice().sort((a,b)=>a.localeCompare(b,"he")).forEach(n=>{const o=document.createElement("option");o.value=n;o.textContent=n;sel.appendChild(o)});
+
+  function today(){
+    const el=document.getElementById("today");
+    let r=ROWS.find(x=>x.date===iso);
+    if(r){
+      const f=fmt(r.date);
+      el.innerHTML=`<div class="lbl">התורנים היום</div><div class="dt">${f.w}, ${f.d}</div>`+
+        (r.people.length?`<div class="ppl">${r.people.map(chip).join("")}</div>`:`<div class="none">${r.note||"אין שיבוץ היום"}</div>`);
+      return;
+    }
+    const nx=ROWS.find(x=>x.date>iso&&x.people.length);
+    if(nx){const f=fmt(nx.date);
+      el.innerHTML=`<div class="lbl">התורנות הבאה</div><div class="dt">${f.w}, ${f.d}</div><div class="ppl">${nx.people.map(chip).join("")}</div>`;
+    } else el.innerHTML=`<div class="none">התורנויות לתקופה הזו הסתיימו</div>`;
+  }
+  function fair(){
+    const c={};Object.keys(TRACK).forEach(n=>c[n]=0);
+    ROWS.forEach(r=>r.people.forEach(p=>c[p]++));
+    const mx=Math.max(...Object.values(c));
+    const order=Object.keys(c).sort((a,b)=>c[b]-c[a]||a.localeCompare(b,"he"));
+    document.getElementById("fair").innerHTML=order.map(n=>`<div class="frow"><div class="nm">${chip(n)}</div><div class="bar-wrap"><div class="bar" style="width:${c[n]/mx*100}%;background:${COL[TRACK[n]]}"></div></div><div class="cnt"><b>${c[n]}</b></div></div>`).join("");
+  }
+  function sched(){
+    const f=sel.value;let html="",lastWk=null;
+    ROWS.forEach(r=>{
+      const d=parse(r.date);
+      const sun=new Date(d);sun.setUTCDate(sun.getUTCDate()-d.getUTCDay());
+      const key=sun.toISOString().slice(0,10);
+      if(key!==lastWk){lastWk=key;const e=new Date(sun);e.setUTCDate(e.getUTCDate()+5);
+        html+=`<div class="wk">שבוע ${sun.getUTCDate()}.${sun.getUTCMonth()+1} - ${e.getUTCDate()}.${e.getUTCMonth()+1}</div>`;}
+      const t=fmt(r.date);
+      const cls=["erow"];
+      if(r.date<iso)cls.push("past");if(r.date===iso)cls.push("now");
+      if(f&&!r.people.includes(f))cls.push("dim");
+      const who=r.people.length?r.people.map(chip).join(""):`<span class="off">${r.note||"ללא שיבוץ"}</span>`;
+      html+=`<div class="${cls.join(" ")}"><div class="date"><b>${t.d}</b><span>${t.w}</span></div><div class="who">${who}${r.fri&&r.people.length?'<span class="pill">סוגרי שוש</span>':""}</div></div>`;
+    });
+    document.getElementById("sched").innerHTML=html;
+  }
+  sel.addEventListener("change",sched);
+  today();fair();sched();
+  setInterval(()=>location.reload(),30*60*1000);
+})();
+</script>
+</body>
+</html>
