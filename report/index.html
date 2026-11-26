@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>דיווח - קורס אתרוג</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Heebo',sans-serif}
+body{min-height:100vh;background:#0b0f1a;color:#eef1f8;padding:20px 16px 60px}
+.b1,.b2{position:fixed;border-radius:50%;filter:blur(90px);opacity:.35;z-index:-1}
+.b1{width:300px;height:300px;background:#2dd4a0;top:-80px;right:-80px}
+.b2{width:260px;height:260px;background:#3b82f6;bottom:-60px;left:-60px}
+.wrap{max-width:520px;margin:0 auto}
+h1{font-size:26px;font-weight:800;text-align:center;margin:18px 0 4px}
+.sub{text-align:center;color:#9aa3b8;font-size:14px;margin-bottom:22px}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:18px;margin-bottom:14px;backdrop-filter:blur(14px)}
+.card-title{font-weight:700;font-size:16px;margin-bottom:12px}
+.label{display:block;font-size:13px;color:#9aa3b8;margin:12px 0 5px}
+.input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;color:#eef1f8;font-size:15px;font-family:inherit}
+.input:focus{outline:none;border-color:#2dd4a0}
+textarea.input{resize:vertical}
+.btn{width:100%;margin-top:16px;background:linear-gradient(135deg,#2dd4a0,#25b386);border:none;border-radius:14px;padding:14px;font-size:16px;font-weight:700;color:#06251c;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.45;cursor:default}
+.ok{background:rgba(45,212,160,.15);border:1px solid rgba(45,212,160,.4);color:#7ce8c3;border-radius:12px;padding:12px;text-align:center;margin-top:12px;font-weight:600}
+.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);color:#fca5a5;border-radius:12px;padding:12px;text-align:center;margin-top:12px;font-size:14px}
+.hint{font-size:13px;color:#c9a86a;margin-top:10px}
+.dd{position:relative}
+.dd-btn{display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:right}
+.dd-btn span:first-child{color:#eef1f8}
+.dd-btn span:first-child.ph{color:#6b7386}
+.dd-chev{color:#9aa3b8;font-size:12px}
+.dd-panel{position:absolute;top:calc(100% + 6px);right:0;left:0;background:#141a29;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:8px;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.dd-search{margin-bottom:6px;font-size:14px}
+.dd-list{max-height:220px;overflow-y:auto}
+.dd-opt{display:block;width:100%;text-align:right;background:none;border:none;color:#eef1f8;padding:11px 10px;font-size:15px;font-family:inherit;border-radius:9px;cursor:pointer}
+.dd-opt:hover,.dd-opt:focus{background:rgba(45,212,160,.14);outline:none}
+.dd-empty{padding:10px;color:#9aa3b8;font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="b1"></div><div class="b2"></div>
+<div class="wrap">
+<h1>דיווח - קורס אתרוג</h1>
+<div class="sub">מילוי דיווח חדש</div>
+<div class="card">
+<div class="card-title">פרטי הדיווח</div>
+<label class="label">שם מלא</label>
+<input id="trainee" class="input" placeholder="שם מלא">
+<label class="label">מספר אישי</label>
+<input id="pn" class="input" placeholder="מספר אישי" inputmode="numeric">
+<label class="label">מפקד אישי</label>
+<div class="dd" id="dd-pc">
+<button type="button" class="input dd-btn" id="ddbtn-pc" onclick="ddToggle('pc')"><span id="ddval-pc">בחרו מפקד…</span><span class="dd-chev">▾</span></button>
+<input type="hidden" id="pc">
+<div class="dd-panel" id="ddpanel-pc" style="display:none">
+<input class="input dd-search" id="ddsearch-pc" placeholder="חיפוש מפקד…" oninput="ddFilter('pc')">
+<div class="dd-list" id="ddlist-pc"></div>
+</div>
+<label class="label">מפקד מדווח</label>
+<div class="dd" id="dd-rp">
+<button type="button" class="input dd-btn" id="ddbtn-rp" onclick="ddToggle('rp')"><span id="ddval-rp">בחרו מפקד…</span><span class="dd-chev">▾</span></button>
+<input type="hidden" id="rp">
+<div class="dd-panel" id="ddpanel-rp" style="display:none">
+<input class="input dd-search" id="ddsearch-rp" placeholder="חיפוש מפקד…" oninput="ddFilter('rp')">
+<div class="dd-list" id="ddlist-rp"></div>
+</div>
+<label class="label">העבירה</label>
+<input id="vio" class="input" placeholder="כתבו את העבירה בטקסט חופשי">
+<label class="label">פירוט</label>
+<textarea id="det" class="input" rows="4" placeholder="מה קרה בדיוק"></textarea>
+<div id="missing" class="hint" style="display:none"></div>
+<button id="send" class="btn" disabled>שליחת דיווח</button>
+<div id="ok" class="ok" style="display:none">הדיווח נקלט ✓</div>
+<div id="err" class="err" style="display:none">השליחה לא הצליחה כרגע, בדקו חיבור ונסו שוב.</div>
+</div>
+</div>
+<script>
+var DD_OPTS = {};
+DD_OPTS['pc'] = ["המפקדת דפנה פיינגולד", "המפקדת מאור אלוני", "המפקדת בת חן גיגי", "המפקדת רוני דהן", "המפקדת טל דוידור", "המפקד גל גוטמן", "המפקד רז פסח", "המפקדת עמית ביטון", "המפקד רון מאיר", "המפקדת ליאור טוויג", "המפקדת יובל הרשקוביץ", "המפקדת עדי לייזר", "המפקדת לינוי שניידרמן", "המפקדת אירוס טללה", "המפקד יואב אסרף", "המפקד תמיר גואטה", "המפקדת מיקה רוזן"];
+DD_OPTS['rp'] = ["המפקדת דפנה פיינגולד", "המפקדת מאור אלוני", "המפקדת בת חן גיגי", "המפקדת רוני דהן", "המפקדת טל דוידור", "המפקד גל גוטמן", "המפקד רז פסח", "המפקדת עמית ביטון", "המפקד רון מאיר", "המפקדת ליאור טוויג", "המפקדת יובל הרשקוביץ", "המפקדת עדי לייזר", "המפקדת לינוי שניידרמן", "המפקדת אירוס טללה", "המפקד יואב אסרף", "המפקד תמיר גואטה", "המפקדת מיקה רוזן", "הרמ״ג אופק כהן", "הרמ״ג אורי קרום", "הרמ״ג ליאור רותם"];
+function ddToggle(id){
+  var p = document.getElementById('ddpanel-' + id);
+  var open = p.style.display !== 'none';
+  document.querySelectorAll('.dd-panel').forEach(function(x){ x.style.display = 'none'; });
+  if (!open) { p.style.display = 'block'; ddRender(id, ''); var s = document.getElementById('ddsearch-' + id); s.value=''; setTimeout(function(){ s.focus(); }, 30); }
+}
+function ddFilter(id){ ddRender(id, document.getElementById('ddsearch-' + id).value); }
+function ddRender(id, q){
+  var list = document.getElementById('ddlist-' + id);
+  list.innerHTML = '';
+  var shown = DD_OPTS[id].filter(function(o){ return o.indexOf(q.trim()) !== -1; });
+  if (!shown.length) { var e = document.createElement('div'); e.className = 'dd-empty'; e.textContent = 'לא נמצאו תוצאות'; list.appendChild(e); return; }
+  shown.forEach(function(o){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'dd-opt'; b.textContent = o;
+    b.onclick = function(){
+      document.getElementById(id).value = o;
+      var v = document.getElementById('ddval-' + id); v.textContent = o; v.classList.remove('ph');
+      document.getElementById('ddpanel-' + id).style.display = 'none';
+      ['pc','rp'].forEach(function(id){var v=document.getElementById('ddval-'+id); if(v && v.textContent.indexOf('בחרו')===0) v.classList.add('ph');});
+check();
+    };
+    list.appendChild(b);
+  });
+}
+document.addEventListener('click', function(e){
+  if (!e.target.closest('.dd')) document.querySelectorAll('.dd-panel').forEach(function(x){ x.style.display = 'none'; });
+});
+var F = {trainee:'trainee', pn:'pn', pc:'pc', rp:'rp', vio:'vio', det:'det'};
+var names = {trainee:'שם מלא', pn:'מספר אישי', pc:'מפקד אישי', rp:'מפקד מדווח', vio:'העבירה', det:'פירוט'};
+function val(k){ return document.getElementById(F[k]).value.trim(); }
+function check(){
+  var miss = [];
+  for (var k in F) { if (!val(k)) miss.push(names[k]); }
+  var m = document.getElementById('missing');
+  if (miss.length) { m.style.display = 'block'; m.textContent = 'חסרים שדות: ' + miss.join(', '); }
+  else { m.style.display = 'none'; }
+  document.getElementById('send').disabled = miss.length > 0;
+}
+for (var k in F) { document.getElementById(F[k]).addEventListener('input', check); document.getElementById(F[k]).addEventListener('change', check); }
+document.getElementById('send').addEventListener('click', async function(){
+  var b = document.getElementById('send');
+  window.__ck = window.__ck || ((window.crypto&&crypto.randomUUID)?crypto.randomUUID():('k'+Date.now().toString(36)+Math.random().toString(36).slice(2,12)));
+  b.disabled = true; b.textContent = 'שולח…';
+  document.getElementById('err').style.display = 'none';
+  try {
+    var r = await fetch('https://magma-reports-api.mqog1v.workers.dev/api/reports', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ trainee: val('trainee'), personal_number: val('pn'), personal_commander: val('pc'), reporter: val('rp'), violation: val('vio'), details: val('det'), client_key: window.__ck }) });
+    if (!r.ok) throw 0;
+    window.__ck = null;
+    document.getElementById('ok').style.display = 'block';
+    b.textContent = 'שליחת דיווח';
+    for (var k in F) document.getElementById(F[k]).value = '';
+    ['pc','rp'].forEach(function(id){var v=document.getElementById('ddval-'+id); if(v){v.textContent='בחרו מפקד…';v.classList.add('ph');}});
+    check();
+  } catch(e) {
+    document.getElementById('err').style.display = 'block';
+    b.disabled = false; b.textContent = 'שליחת דיווח';
+  }
+});
+check();
+</script>
+</body>
+</html>
