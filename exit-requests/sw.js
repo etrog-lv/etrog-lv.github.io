@@ -1,0 +1,2 @@
+self.addEventListener('push',e=>{let d={};try{d=e.data.json()}catch{}e.waitUntil(self.registration.showNotification(d.title||'קורס אתרוג',{body:d.body||'',data:{url:d.url||'/'},icon:'/icon-192.png?v=8',dir:'rtl',lang:'he'}))});
+self.addEventListener('notificationclick',e=>{e.notification.close();const u=e.notification.data&&e.notification.data.url||'/';e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(l=>{for(const c of l){if('focus' in c){c.navigate&&c.navigate(u);return c.focus()}}return clients.openWindow(u)}))});
