@@ -23,7 +23,7 @@ button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:13px 16p
 <div id="view-form">
 <div class="card"><form id="f" autocomplete="off">
 <label for="name">שם</label><input id="name" list="names" placeholder="התחילו להקליד ובחרו מהרשימה" required><datalist id="names"></datalist>
-<label for="team">צוות</label><input id="team" required>
+<label for="team">צוות</label><select id="team" required><option value="">בחרו את הצוות שלכם</option></select>
 <label>תאריך ושעות</label>
 <div class="row2"><div><small class="muted">יציאה</small><input type="datetime-local" id="start" required></div><div><small class="muted">חזרה</small><input type="datetime-local" id="end" required></div></div>
 <label for="text">נוסח בקשת היציאה <small>(סיבה, תאריך יציאה וחזרה, שעות, פרטים מלאים, מידת הקרבה)</small></label><textarea id="text" required></textarea>
@@ -42,10 +42,11 @@ const LOGO='/logo.png?v=8';
 </script><script>
 const KEY='exit_receipts';const rcs=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}};
 function setManifest(rc){const m={name:'בקשת יציאה',short_name:'בקשת יציאה',display:'standalone',dir:'rtl',lang:'he',start_url:location.origin+'/exit-requests/'+(rc?'#r='+rc:''),scope:location.origin+'/exit-requests/',background_color:'#f5f7fa',theme_color:'#2f6fed',icons:[{src:location.origin+'/icon-192.png?v=8',sizes:'192x192',type:'image/png'}]};$('#mf').href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(m))}
-(async()=>{try{const {names}=await api('/api/roster');$('#names').innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');window.NAMES=names}catch{$('#err').textContent='לא ניתן לטעון את הרשימה כרגע'}
+(async()=>{try{const {names}=await api('/api/roster');$('#names').innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');window.NAMES=names;const {teams}=await api('/api/teams');$('#team').innerHTML='<option value="">בחרו את הצוות שלכם</option>'+teams.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')}catch{$('#err').textContent='לא ניתן לטעון את הרשימה כרגע'}
  const r=rcs();if(r.length){$('#mine').classList.remove('hide');$('#minelist').innerHTML=r.map(x=>`<div class="item"><span>${esc(x.name)}<div class="muted">${esc(x.when)}</div></span><button class="sm sec" data-r="${x.r}">מעקב</button></div>`).join('');$('#minelist').onclick=e=>{const b=e.target.closest('button');if(b)location.hash='r='+b.dataset.r}}
  route()})();
 $('#f').onsubmit=async e=>{e.preventDefault();$('#err').textContent='';const name=$('#name').value.trim();if(!(window.NAMES||[]).includes(name)){$('#err').textContent='יש לבחור שם מהרשימה';return}
+ if(!$('#team').value){$('#err').textContent='יש לבחור צוות מהרשימה';return}
  const body={name,team:$('#team').value,start:$('#start').value,end:$('#end').value,text:$('#text').value,travel:$('#travel').value};$('#go').disabled=true;
  try{const j=await api('/api/exit',{method:'POST',body});const l=rcs();l.unshift({r:j.receipt,name,when:body.start.replace('T',' ')+' - '+body.end.replace('T',' ')});localStorage.setItem(KEY,JSON.stringify(l.slice(0,20)));location.hash='r='+j.receipt;location.reload()}catch(x){$('#err').textContent=x.message;$('#go').disabled=false}};
 window.onhashchange=()=>route();
