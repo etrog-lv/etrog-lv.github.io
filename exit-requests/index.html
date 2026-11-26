@@ -15,6 +15,8 @@ button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:13px 16p
 .k{color:#657080;font-size:13px;margin-top:8px}.v{white-space:pre-wrap;word-break:break-word}
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:9}.sheet>div{background:#fff;width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:18px;max-height:88vh;overflow:auto}
 .note{background:#eef4ff;border-radius:12px;padding:11px 13px;font-size:14px;margin-top:10px}
+
+.row2>*{min-width:0}input,select,textarea{min-width:0;max-width:100%}input[type=datetime-local],input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;min-height:48px;display:block}#out{width:auto;flex:0 0 auto;padding:10px 14px}.v,.muted,.item span{unicode-bidi:plaintext}
 </style><link rel="manifest" id="mf"></head><body><div class="wrap">
 <header><img src="/logo.png?v=8" alt=""><h1>בקשת יציאה<small>קורס אתרוג ל״ו</small></h1></header>
 <div id="view-status" class="hide"></div>
@@ -45,7 +47,7 @@ function setManifest(rc){const m={name:'בקשת יציאה',short_name:'בקש�
  route()})();
 $('#f').onsubmit=async e=>{e.preventDefault();$('#err').textContent='';const name=$('#name').value.trim();if(!(window.NAMES||[]).includes(name)){$('#err').textContent='יש לבחור שם מהרשימה';return}
  const body={name,team:$('#team').value,start:$('#start').value,end:$('#end').value,text:$('#text').value,travel:$('#travel').value};$('#go').disabled=true;
- try{const j=await api('/api/exit',{method:'POST',body});const l=rcs();l.unshift({r:j.receipt,name,when:body.start.replace('T',' ')+' עד '+body.end.replace('T',' ')});localStorage.setItem(KEY,JSON.stringify(l.slice(0,20)));location.hash='r='+j.receipt;location.reload()}catch(x){$('#err').textContent=x.message;$('#go').disabled=false}};
+ try{const j=await api('/api/exit',{method:'POST',body});const l=rcs();l.unshift({r:j.receipt,name,when:body.start.replace('T',' ')+' - '+body.end.replace('T',' ')});localStorage.setItem(KEY,JSON.stringify(l.slice(0,20)));location.hash='r='+j.receipt;location.reload()}catch(x){$('#err').textContent=x.message;$('#go').disabled=false}};
 window.onhashchange=()=>route();
 async function route(){const m=location.hash.match(/r=([\w-]{20,})/);if(!m){$('#view-status').classList.add('hide');$('#view-form').classList.remove('hide');setManifest();return}
  const rc=m[1];setManifest(rc);$('#view-form').classList.add('hide');const v=$('#view-status');v.classList.remove('hide');v.innerHTML='<div class="card muted">טוען…</div>';
