@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>בקשת יציאה · קורס אתרוג ל״ו</title>
+<link rel="icon" href="/favicon-32.png?v=8"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#2f6fed"><style>*{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(135deg,#f5f7fa,#e8ecf3);margin:0;min-height:100vh;color:#1c2430;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:14px 14px 60px}
+header{display:flex;align-items:center;gap:10px;margin:6px 0 14px}header img{width:44px;height:44px;border-radius:10px}header h1{font-size:19px;margin:0;line-height:1.2}header small{display:block;color:#657080;font-weight:400;font-size:13px}
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 18px rgba(0,0,0,.07);margin-bottom:12px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 5px}label small{font-weight:400;color:#657080}
+input,select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1.5px solid #d3dae4;border-radius:11px;background:#fff;color:inherit}textarea{min-height:104px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#2f6fed}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:13px 16px;background:#2f6fed;color:#fff;width:100%;margin-top:14px;cursor:pointer}button.sec{background:#e6ebf3;color:#1c2430}button.ok{background:#1f9d55}button.no{background:#d64545}button.sm{width:auto;padding:8px 12px;margin:0;font-size:14px}button:disabled{opacity:.5}
+.err{color:#c0392b;font-size:14px;margin-top:10px;min-height:1px}.muted{color:#657080;font-size:14px}.hide{display:none!important}
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:700}.b-pend{background:#fff3cd;color:#8a6200}.b-ok{background:#d6f5e3;color:#14703a}.b-no{background:#fbdcdc;color:#a02323}.b-urg{background:#ffe0d0;color:#b24400}.b-g{background:#e4defa;color:#4a2fb0}.b-b{background:#dbeafe;color:#1d4fa8}.b-o{background:#ffe9c7;color:#8a5200}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 2px;border-bottom:1px solid #eef1f6}.item:last-child{border:0}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button{margin:0;background:#e6ebf3;color:#1c2430;padding:10px 6px;font-size:14px}.tabs button.on{background:#2f6fed;color:#fff}
+.k{color:#657080;font-size:13px;margin-top:8px}.v{white-space:pre-wrap;word-break:break-word}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:9}.sheet>div{background:#fff;width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:18px;max-height:88vh;overflow:auto}
+.note{background:#eef4ff;border-radius:12px;padding:11px 13px;font-size:14px;margin-top:10px}
+</style><link rel="manifest" id="mf"></head><body><div class="wrap">
+<header><img src="/logo.png?v=8" alt=""><h1>בקשת יציאה<small>קורס אתרוג ל״ו</small></h1></header>
+<div id="view-status" class="hide"></div>
+<div id="view-form">
+<div class="card"><form id="f" autocomplete="off">
+<label for="name">שם</label><input id="name" list="names" placeholder="התחילו להקליד ובחרו מהרשימה" required><datalist id="names"></datalist>
+<label for="team">צוות</label><input id="team" required>
+<label>תאריך ושעות</label>
+<div class="row2"><div><small class="muted">יציאה</small><input type="datetime-local" id="start" required></div><div><small class="muted">חזרה</small><input type="datetime-local" id="end" required></div></div>
+<label for="text">נוסח בקשת היציאה <small>(סיבה, תאריך יציאה וחזרה, שעות, פרטים מלאים, מידת הקרבה)</small></label><textarea id="text" required></textarea>
+<label for="travel">דרכי הגעה וחזרה <small>(שעות תחבורה, פירוט המסלול)</small></label><textarea id="travel" required></textarea>
+<div class="err" id="err"></div><button id="go" type="submit">שליחת בקשה</button></form></div>
+<div id="mine" class="card hide"><b>הבקשות ששלחתי מהמכשיר הזה</b><div id="minelist"></div></div>
+</div></div>
+<script>const API='https://etrog-course-ops.mqog1v.workers.dev';
+const $=s=>document.querySelector(s);const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(p,o={},tok){const h={'Content-Type':'application/json'};if(tok)h.Authorization='Bearer '+tok;const r=await fetch(API+p,{...o,headers:h,body:o.body?JSON.stringify(o.body):undefined});let j={};try{j=await r.json()}catch{}if(!r.ok){const e=new Error(j.error||'שגיאה');e.status=r.status;throw e}return j}
+function b64uToU8(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const r=atob(s);return Uint8Array.from(r,c=>c.charCodeAt(0))}
+function pushSupport(){const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);const standalone=window.navigator.standalone||matchMedia('(display-mode: standalone)').matches;if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))return ios&&!standalone?'ios-home':'none';return 'ok'}
+async function enablePush(swPath){const reg=await navigator.serviceWorker.register(swPath);await navigator.serviceWorker.ready;const perm=await Notification.requestPermission();if(perm!=='granted')throw new Error('לא אושרו התראות');const {key}=await api('/api/vapid');let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64uToU8(key)});return sub.toJSON()}
+const fmt=ep=>new Intl.DateTimeFormat('he-IL',{timeZone:'Asia/Jerusalem',dateStyle:'short',timeStyle:'short'}).format(new Date(ep));
+const LOGO='/logo.png?v=8';
+</script><script>
+const KEY='exit_receipts';const rcs=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}};
+function setManifest(rc){const m={name:'בקשת יציאה',short_name:'בקשת יציאה',display:'standalone',dir:'rtl',lang:'he',start_url:location.origin+'/exit-requests/'+(rc?'#r='+rc:''),scope:location.origin+'/exit-requests/',background_color:'#f5f7fa',theme_color:'#2f6fed',icons:[{src:location.origin+'/icon-192.png?v=8',sizes:'192x192',type:'image/png'}]};$('#mf').href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(m))}
+(async()=>{try{const {names}=await api('/api/roster');$('#names').innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');window.NAMES=names}catch{$('#err').textContent='לא ניתן לטעון את הרשימה כרגע'}
+ const r=rcs();if(r.length){$('#mine').classList.remove('hide');$('#minelist').innerHTML=r.map(x=>`<div class="item"><span>${esc(x.name)}<div class="muted">${esc(x.when)}</div></span><button class="sm sec" data-r="${x.r}">מעקב</button></div>`).join('');$('#minelist').onclick=e=>{const b=e.target.closest('button');if(b)location.hash='r='+b.dataset.r}}
+ route()})();
+$('#f').onsubmit=async e=>{e.preventDefault();$('#err').textContent='';const name=$('#name').value.trim();if(!(window.NAMES||[]).includes(name)){$('#err').textContent='יש לבחור שם מהרשימה';return}
+ const body={name,team:$('#team').value,start:$('#start').value,end:$('#end').value,text:$('#text').value,travel:$('#travel').value};$('#go').disabled=true;
+ try{const j=await api('/api/exit',{method:'POST',body});const l=rcs();l.unshift({r:j.receipt,name,when:body.start.replace('T',' ')+' עד '+body.end.replace('T',' ')});localStorage.setItem(KEY,JSON.stringify(l.slice(0,20)));location.hash='r='+j.receipt;location.reload()}catch(x){$('#err').textContent=x.message;$('#go').disabled=false}};
+window.onhashchange=()=>route();
+async function route(){const m=location.hash.match(/r=([\w-]{20,})/);if(!m){$('#view-status').classList.add('hide');$('#view-form').classList.remove('hide');setManifest();return}
+ const rc=m[1];setManifest(rc);$('#view-form').classList.add('hide');const v=$('#view-status');v.classList.remove('hide');v.innerHTML='<div class="card muted">טוען…</div>';
+ try{const s=await api('/api/status?r='+rc);const st={pending:['ממתינה להחלטה','b-pend'],approved:['אושרה','b-ok'],denied:['לא אושרה','b-no']}[s.status];
+  const sup=pushSupport();let pushHtml='';
+  if(sup==='ok')pushHtml='<button class="sec" id="pb">קבלת התראה כשתתקבל החלטה</button><div class="err" id="pe"></div>';
+  else if(sup==='ios-home')pushHtml='<div class="note">כדי לקבל התראה באייפון: לחצו על שיתוף ← ״הוסף למסך הבית״, פתחו את הקישור מהאייקון ואשרו התראות. אפשר גם פשוט לחזור לכאן ולבדוק. לא מובטח שהתראה תגיע, ולכן הדף הזה הוא המקור המהימן.</div>';
+  v.innerHTML=`<div class="card"><span class="badge ${st[1]}">${st[0]}</span><div class="k">שם</div><div class="v">${esc(s.name)}</div><div class="k">תאריך ושעות</div><div class="v">${esc(s.when)}</div>${s.note?`<div class="k">הערת המנהלים</div><div class="v">${esc(s.note)}</div>`:''}
+  <div class="note">שמרו את הקישור של הדף הזה. רק מי שיש לו אותו יכול לראות את ההחלטה. הדף מתעדכן כשמרעננים אותו.</div>${s.status==='pending'?pushHtml:''}<button class="sec" id="back">בקשה חדשה</button><button class="sec" id="rf">רענון</button></div>`;
+  $('#back').onclick=()=>{history.replaceState(null,'',location.pathname);route()};$('#rf').onclick=()=>route();
+  if($('#pb'))$('#pb').onclick=async()=>{try{const sub=await enablePush('sw.js');await api('/api/push/sub-request',{method:'POST',body:{r:rc,sub}});$('#pb').textContent='התראה הופעלה ✓';$('#pb').disabled=true}catch(e){$('#pe').textContent=e.message}}
+ }catch{v.innerHTML='<div class="card">הקישור לא תקין או שהבקשה לא נמצאה.<button class="sec" id="back2">בקשה חדשה</button></div>';$('#back2').onclick=()=>{history.replaceState(null,'',location.pathname);route()}}}
+</script></body></html>
