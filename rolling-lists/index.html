@@ -243,7 +243,7 @@ async function addItem(lst, input, btn, msg) {
     lst.items.push(name);
     render($('#search').value, lst.title);
     for (const c of document.querySelectorAll('.card.open')) {
-      if (c.querySelector('.name') && c.querySelector('.name').textContent === lst.title) {
+      if (c.querySelector('.name') && c.querySelector('.name').firstChild.textContent === lst.title) {
         const m = c.querySelector('.addmsg');
         if (m) { m.textContent = 'נוסף ✓'; m.classList.add('ok'); }
         break;
