@@ -83,12 +83,13 @@ mark { background: #fef08a; border-radius: 3px; padding: 0 1px; }
 .arow .an { flex: 1; min-width: 0; }
 .arow .am { display: block; font-size: 11.5px; color: #64748b; }
 .arow button { border: 1px solid #ddd6fe; background: #f5f3ff; color: #7c3aed; border-radius: 9px; padding: 6px 11px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
-.archrow { padding: 10px 2px 2px; text-align: left; }
+.archrow { padding: 0 2px 8px; text-align: left; }
 .archbtn { border: 1px solid #e2e8f0; background: #fff; color: #64748b; border-radius: 9px; padding: 6px 12px; font-size: 13px; cursor: pointer; font-family: inherit; }
 .archbtn.confirm { background: #fff1f2; border-color: #fecdd3; color: #be123c; font-weight: 700; }
 .newtag { display: inline-block; background: #ede9fe; color: #7c3aed; border-radius: 6px; font-size: 11px; font-weight: 700; padding: 1px 6px; margin-inline-start: 6px; vertical-align: middle; }
 .emptyl { color: #94a3b8; font-size: 14px; padding: 10px 2px; }
 footer { text-align: center; color: #94a3b8; font-size: 11.5px; margin-top: 22px; line-height: 1.7; }
+.hbar .toolbar{margin:0;gap:6px;flex:none}.hbar .toolbar button{flex:none;width:44px;padding:0;border-radius:10px}
 </style>
 </head>
 <body>
@@ -96,16 +97,16 @@ footer { text-align: center; color: #94a3b8; font-size: 11.5px; margin-top: 22px
 <div id="app">
   <header>
     <div class="hbar">
-      <img src="/logo.png?v=8" alt="סמל קורס אתרוג ל״ו">
+      <a href="/" aria-label="סמל קורס אתרוג ל״ו · לדף הבית של הקורס" style="display:flex;flex:none"><img src="/logo.png?v=8" alt="סמל קורס אתרוג ל״ו"></a>
       <div class="htitles">
         <div class="t1">רשימות מתגלגלות</div>
         <div class="t2">קורס אתרוג ל״ו</div>
       </div>
+      <div class="toolbar"><button type="button" id="newBtn" class="primary" aria-label="רשימה חדשה" title="רשימה חדשה"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button type="button" id="archToggle" aria-label="ארכיון" title="ארכיון"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="4.5" rx="1"/><path d="M5 8.5V19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.5M10 13h4"/></svg></button></div>
     </div>
   </header>
   <main>
     <input id="search" type="search" placeholder="חיפוש שם או רשימה…">
-    <div class="toolbar"><button type="button" id="newBtn" class="primary" aria-label="רשימה חדשה" title="רשימה חדשה"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button type="button" id="archToggle" aria-label="ארכיון" title="ארכיון"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="4.5" rx="1"/><path d="M5 8.5V19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.5M10 13h4"/></svg></button></div>
     <div id="newPanel" class="panel hidden"><div class="prow"><input id="newTitle" type="text" maxlength="80" placeholder="שם הרשימה החדשה…" aria-label="שם הרשימה החדשה"><button type="button" class="go" id="newGo" aria-label="יצירה" title="יצירה"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div><div class="pmsg" id="newMsg"></div></div>
     <div id="archPanel" class="panel hidden"></div>
     <div id="summary"></div>
@@ -150,11 +151,10 @@ function render(filter, openTitle) {
         '<span class="meta">' + (lst.custom ? 'נוצרה ' : 'עודכן ') + lst.updated + ' · ' + lst.items.length + ' פריטים</span></span>' +
         '<span class="chev">▼</span>' +
       '</button>' +
-      '<div class="card-body">' + itemsHtml +
+      '<div class="card-body">' + '<div class="archrow"><button type="button" class="archbtn" aria-label="העברה לארכיון" title="העברה לארכיון">'+ICON.arch+'</button></div>' +
         '<div class="addrow"><input type="text" list="roster-names" placeholder="הוספת חניך/ה מרשימת השמות…" aria-label="שם החניך/ה להוספה"><button type="button" aria-label="הוספה" title="הוספה"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>' +
-        '<div class="addmsg"></div>' +
-        (lst.items.length ? '' : '<div class="emptyl">הרשימה עדיין ריקה. אפשר להוסיף חניכים מרשימת השמות.</div>') +
-        '<div class="archrow"><button type="button" class="archbtn" aria-label="העברה לארכיון" title="העברה לארכיון">'+ICON.arch+'</button></div></div>';
+        '<div class="addmsg"></div>' + itemsHtml +
+        (lst.items.length ? '' : '<div class="emptyl">הרשימה עדיין ריקה. אפשר להוסיף חניכים מרשימת השמות.</div>') + '</div>';
     card.querySelector('.card-head').addEventListener('click', () => card.classList.toggle('open'));
     const addBtn = card.querySelector('.addrow button');
     const addInp = card.querySelector('.addrow input');
