@@ -62,6 +62,28 @@ mark { background: #fef08a; border-radius: 3px; padding: 0 1px; }
 .addrow button[disabled] { opacity: .6; }
 .addmsg { font-size: 12px; padding: 3px 2px 0; min-height: 15px; color: #be123c; }
 .addmsg.ok { color: #15803d; }
+.toolbar { display: flex; gap: 8px; margin: 2px 0 10px; }
+.toolbar button { flex: 1; border: 1.5px solid #e2e8f0; background: #fff; color: #475569; border-radius: 12px; padding: 10px 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.toolbar button.primary { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+.toolbar button:active { transform: scale(.98); }
+.panel { background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.06); padding: 12px 14px; margin-bottom: 12px; }
+.panel .prow { display: flex; gap: 8px; }
+.panel input { flex: 1; min-width: 0; padding: 10px 12px; font-size: 15px; border: 1.5px solid #e2e8f0; border-radius: 10px; outline: none; font-family: inherit; }
+.panel input:focus { border-color: #7c3aed; }
+.panel .go { background: #7c3aed; color: #fff; border: 0; border-radius: 10px; padding: 9px 16px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.panel .go[disabled] { opacity: .6; }
+.panel .pmsg { font-size: 12.5px; min-height: 16px; padding: 5px 2px 0; color: #be123c; }
+.panel .pmsg.ok { color: #15803d; }
+.arow { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-top: 1px solid #f1f5f9; font-size: 14.5px; }
+.arow:first-of-type { border-top: 0; }
+.arow .an { flex: 1; min-width: 0; }
+.arow .am { display: block; font-size: 11.5px; color: #64748b; }
+.arow button { border: 1px solid #ddd6fe; background: #f5f3ff; color: #7c3aed; border-radius: 9px; padding: 6px 11px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.archrow { padding: 10px 2px 2px; text-align: left; }
+.archbtn { border: 1px solid #e2e8f0; background: #fff; color: #64748b; border-radius: 9px; padding: 6px 12px; font-size: 13px; cursor: pointer; font-family: inherit; }
+.archbtn.confirm { background: #fff1f2; border-color: #fecdd3; color: #be123c; font-weight: 700; }
+.newtag { display: inline-block; background: #ede9fe; color: #7c3aed; border-radius: 6px; font-size: 11px; font-weight: 700; padding: 1px 6px; margin-inline-start: 6px; vertical-align: middle; }
+.emptyl { color: #94a3b8; font-size: 14px; padding: 10px 2px; }
 footer { text-align: center; color: #94a3b8; font-size: 11.5px; margin-top: 22px; line-height: 1.7; }
 </style>
 </head>
@@ -79,6 +101,9 @@ footer { text-align: center; color: #94a3b8; font-size: 11.5px; margin-top: 22px
   </header>
   <main>
     <input id="search" type="search" placeholder="חיפוש שם או רשימה…">
+    <div class="toolbar"><button type="button" id="newBtn" class="primary">+ רשימה חדשה</button><button type="button" id="archToggle">ארכיון</button></div>
+    <div id="newPanel" class="panel hidden"><div class="prow"><input id="newTitle" type="text" maxlength="80" placeholder="שם הרשימה החדשה…" aria-label="שם הרשימה החדשה"><button type="button" class="go" id="newGo">יצירה</button></div><div class="pmsg" id="newMsg"></div></div>
+    <div id="archPanel" class="panel hidden"></div>
     <div id="summary"></div>
     <div id="cards"></div>
     <div id="nores" class="hidden">אין תוצאות לחיפוש</div>
@@ -100,6 +125,7 @@ function render(filter, openTitle) {
   cards.innerHTML = '';
   let shown = 0;
   for (const lst of DATA.lists) {
+    if (ARCH.has(lst.title)) continue;
     let itemsHtml = '';
     let matchCount = 0;
     for (const raw of lst.items) {
@@ -116,25 +142,48 @@ function render(filter, openTitle) {
     card.className = 'card' + ((q || lst.title === openTitle) ? ' open' : '');
     card.innerHTML =
       '<button class="card-head">' +
-        '<span class="ttl"><span class="name">' + esc(lst.title) + '</span>' +
-        '<span class="meta">עודכן ' + lst.updated + ' · ' + lst.items.length + ' פריטים</span></span>' +
+        '<span class="ttl"><span class="name">' + esc(lst.title) + (lst.custom ? '<span class="newtag">חדשה</span>' : '') + '</span>' +
+        '<span class="meta">' + (lst.custom ? 'נוצרה ' : 'עודכן ') + lst.updated + ' · ' + lst.items.length + ' פריטים</span></span>' +
         '<span class="chev">▼</span>' +
       '</button>' +
       '<div class="card-body">' + itemsHtml +
         '<div class="addrow"><input type="text" list="roster-names" placeholder="הוספת חניך/ה מרשימת השמות…" aria-label="שם החניך/ה להוספה"><button type="button">הוספה</button></div>' +
-        '<div class="addmsg"></div></div>';
+        '<div class="addmsg"></div>' +
+        (lst.items.length ? '' : '<div class="emptyl">הרשימה עדיין ריקה. אפשר להוסיף חניכים מרשימת השמות.</div>') +
+        '<div class="archrow"><button type="button" class="archbtn">העברה לארכיון</button></div></div>';
     card.querySelector('.card-head').addEventListener('click', () => card.classList.toggle('open'));
     const addBtn = card.querySelector('.addrow button');
     const addInp = card.querySelector('.addrow input');
     const addMsg = card.querySelector('.addmsg');
     addBtn.addEventListener('click', () => addItem(lst, addInp, addBtn, addMsg));
     addInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') addItem(lst, addInp, addBtn, addMsg); });
+    const ab = card.querySelector('.archbtn'); let abT;
+    ab.addEventListener('click', () => {
+      if (!ab.classList.contains('confirm')) { ab.classList.add('confirm'); ab.textContent = 'לאשר העברה לארכיון?'; abT = setTimeout(() => { ab.classList.remove('confirm'); ab.textContent = 'העברה לארכיון'; }, 4000); return; }
+      clearTimeout(abT); ab.disabled = true; metaAct('archive', lst.title).then((ok) => { if (!ok) { ab.disabled = false; ab.textContent = 'שגיאה, נסו שוב'; ab.classList.remove('confirm'); } });
+    });
     cards.appendChild(card);
   }
   $('#nores').classList.toggle('hidden', shown > 0);
   $('#summary').textContent = q
     ? shown + ' רשימות תואמות'
-    : DATA.lists.length + ' רשימות · נשמרת הגרסה האחרונה של כל רשימה';
+    : (DATA.lists.length - ARCH.size) + ' רשימות · נשמרת הגרסה האחרונה של כל רשימה';
+  renderArch();
+}
+
+const ARCH = new Set();
+function renderArch() {
+  const arr = DATA.lists.filter((l) => ARCH.has(l.title));
+  $('#archToggle').textContent = 'ארכיון' + (arr.length ? ' (' + arr.length + ')' : '');
+  const pnl = $('#archPanel');
+  if (!arr.length) { pnl.innerHTML = '<div class="emptyl">אין רשימות בארכיון.</div>'; return; }
+  pnl.innerHTML = '';
+  for (const l of arr) {
+    const row = document.createElement('div'); row.className = 'arow';
+    row.innerHTML = '<span class="an">' + esc(l.title) + '<span class="am">' + l.items.length + ' פריטים</span></span><button type="button">שחזור</button>';
+    row.querySelector('button').addEventListener('click', (e) => { e.target.disabled = true; metaAct('restore', l.title).then((ok) => { if (!ok) e.target.disabled = false; }); });
+    pnl.appendChild(row);
+  }
 }
 
 const BASE = {};
@@ -143,6 +192,42 @@ $('#search').addEventListener('input', (e) => render(e.target.value));
 
 const API = 'https://etrog-course-ops.mqog1v.workers.dev';
 let ROSTER = [];
+function applyMeta(j) {
+  ARCH.clear(); for (const t of (j.archived || [])) ARCH.add(t);
+  for (const c of (j.custom || [])) {
+    if (DATA.lists.some((l) => l.title === c.title)) continue;
+    const d = new Date(c.ts).toLocaleDateString('he-IL', { timeZone: 'Asia/Jerusalem', day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.');
+    DATA.lists.unshift({ title: c.title, versions: 1, updated: d, items: [], custom: true });
+    BASE[c.title] = [];
+  }
+}
+async function metaAct(action, title) {
+  try {
+    const r = await fetch(API + '/api/rlmeta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, title }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || 'שגיאה בשמירה');
+    applyMeta(j); render($('#search').value); return true;
+  } catch (e) { return false; }
+}
+$('#archToggle').addEventListener('click', () => $('#archPanel').classList.toggle('hidden'));
+$('#newBtn').addEventListener('click', () => { $('#newPanel').classList.toggle('hidden'); $('#newTitle').focus(); });
+async function createList() {
+  const t = $('#newTitle').value.trim().replace(/\s+/g, ' '), msg = $('#newMsg'), go = $('#newGo');
+  msg.textContent = ''; msg.classList.remove('ok');
+  if (!t) return;
+  if (DATA.lists.some((l) => l.title === t)) { msg.textContent = 'כבר קיימת רשימה בשם הזה' + (ARCH.has(t) ? ' (בארכיון)' : ''); return; }
+  go.disabled = true;
+  try {
+    const r = await fetch(API + '/api/rlmeta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', title: t }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || 'שגיאה בשמירה');
+    applyMeta(j); $('#newTitle').value = ''; $('#newPanel').classList.add('hidden'); $('#search').value = '';
+    render('', t);
+  } catch (e) { msg.textContent = e.message || 'שגיאה בשמירה'; }
+  go.disabled = false;
+}
+$('#newGo').addEventListener('click', createList);
+$('#newTitle').addEventListener('keydown', (e) => { if (e.key === 'Enter') createList(); });
 async function addItem(lst, input, btn, msg) {
   const name = input.value.trim();
   msg.textContent = ''; msg.classList.remove('ok');
@@ -174,6 +259,7 @@ async function addItem(lst, input, btn, msg) {
     dl.innerHTML = ROSTER.map((n) => '<option value="' + esc(n) + '">').join('');
     document.body.appendChild(dl);
   } catch {}
+  try { applyMeta(await (await fetch(API + '/api/rlmeta')).json()); } catch {}
   try {
     const r = await fetch(API + '/api/rlists'); const j = await r.json();
     for (const a of (j.adds || [])) {
