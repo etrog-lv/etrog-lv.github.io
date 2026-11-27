@@ -137,6 +137,8 @@ function render(filter, openTitle) {
     : DATA.lists.length + ' רשימות · נשמרת הגרסה האחרונה של כל רשימה';
 }
 
+const BASE = {};
+for (const l of DATA.lists) BASE[l.title] = l.items.slice();
 $('#search').addEventListener('input', (e) => render(e.target.value));
 
 const API = 'https://etrog-course-ops.mqog1v.workers.dev';
@@ -150,7 +152,7 @@ async function addItem(lst, input, btn, msg) {
   if (lst.items.includes(name)) { msg.textContent = 'השם כבר מופיע ברשימה'; return; }
   btn.disabled = true;
   try {
-    const r = await fetch(API + '/api/rlists', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ list: lst.title, name }) });
+    const r = await fetch(API + '/api/rlists', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ list: lst.title, name, base: BASE[lst.title] || [] }) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error || 'שגיאה בשמירה');
     lst.items.push(name);
@@ -176,7 +178,12 @@ async function addItem(lst, input, btn, msg) {
     const r = await fetch(API + '/api/rlists'); const j = await r.json();
     for (const a of (j.adds || [])) {
       const lst = DATA.lists.find((l) => l.title === a.list);
-      if (lst && !lst.items.includes(a.name)) lst.items.push(a.name);
+      if (!lst || lst.items.includes(a.name)) continue;
+      // An addition belongs to the list version it was made on. If the list's
+      // base version changed (newer WhatsApp version replaced it), the addition
+      // is superseded and stays hidden rather than silently re-adding the name.
+      if (!a.base || JSON.stringify(a.base) !== JSON.stringify(BASE[lst.title])) continue;
+      lst.items.push(a.name);
     }
   } catch {}
   render($('#search').value);
