@@ -64,6 +64,10 @@ mark { background: #fef08a; border-radius: 3px; padding: 0 1px; }
 .addmsg.ok { color: #15803d; }
 .toolbar { display: flex; gap: 8px; margin: 2px 0 10px; }
 .toolbar button { flex: 1; border: 1.5px solid #e2e8f0; background: #fff; color: #475569; border-radius: 12px; padding: 10px 8px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.toolbar button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; position: relative; }
+.toolbar button svg { width: 24px; height: 24px; }
+.cnt { background: #7c3aed; color: #fff; border-radius: 999px; font-size: 12px; min-width: 20px; height: 20px; line-height: 20px; padding: 0 5px; text-align: center; }
+.addrow button, .panel .go, .arow button, .archbtn { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 40px; }
 .toolbar button.primary { background: #7c3aed; border-color: #7c3aed; color: #fff; }
 .toolbar button:active { transform: scale(.98); }
 .panel { background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.06); padding: 12px 14px; margin-bottom: 12px; }
@@ -101,8 +105,8 @@ footer { text-align: center; color: #94a3b8; font-size: 11.5px; margin-top: 22px
   </header>
   <main>
     <input id="search" type="search" placeholder="חיפוש שם או רשימה…">
-    <div class="toolbar"><button type="button" id="newBtn" class="primary">+ רשימה חדשה</button><button type="button" id="archToggle">ארכיון</button></div>
-    <div id="newPanel" class="panel hidden"><div class="prow"><input id="newTitle" type="text" maxlength="80" placeholder="שם הרשימה החדשה…" aria-label="שם הרשימה החדשה"><button type="button" class="go" id="newGo">יצירה</button></div><div class="pmsg" id="newMsg"></div></div>
+    <div class="toolbar"><button type="button" id="newBtn" class="primary" aria-label="רשימה חדשה" title="רשימה חדשה"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><button type="button" id="archToggle" aria-label="ארכיון" title="ארכיון"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="4.5" rx="1"/><path d="M5 8.5V19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.5M10 13h4"/></svg></button></div>
+    <div id="newPanel" class="panel hidden"><div class="prow"><input id="newTitle" type="text" maxlength="80" placeholder="שם הרשימה החדשה…" aria-label="שם הרשימה החדשה"><button type="button" class="go" id="newGo" aria-label="יצירה" title="יצירה"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div><div class="pmsg" id="newMsg"></div></div>
     <div id="archPanel" class="panel hidden"></div>
     <div id="summary"></div>
     <div id="cards"></div>
@@ -147,10 +151,10 @@ function render(filter, openTitle) {
         '<span class="chev">▼</span>' +
       '</button>' +
       '<div class="card-body">' + itemsHtml +
-        '<div class="addrow"><input type="text" list="roster-names" placeholder="הוספת חניך/ה מרשימת השמות…" aria-label="שם החניך/ה להוספה"><button type="button">הוספה</button></div>' +
+        '<div class="addrow"><input type="text" list="roster-names" placeholder="הוספת חניך/ה מרשימת השמות…" aria-label="שם החניך/ה להוספה"><button type="button" aria-label="הוספה" title="הוספה"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>' +
         '<div class="addmsg"></div>' +
         (lst.items.length ? '' : '<div class="emptyl">הרשימה עדיין ריקה. אפשר להוסיף חניכים מרשימת השמות.</div>') +
-        '<div class="archrow"><button type="button" class="archbtn">העברה לארכיון</button></div></div>';
+        '<div class="archrow"><button type="button" class="archbtn" aria-label="העברה לארכיון" title="העברה לארכיון">'+ICON.arch+'</button></div></div>';
     card.querySelector('.card-head').addEventListener('click', () => card.classList.toggle('open'));
     const addBtn = card.querySelector('.addrow button');
     const addInp = card.querySelector('.addrow input');
@@ -159,8 +163,8 @@ function render(filter, openTitle) {
     addInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') addItem(lst, addInp, addBtn, addMsg); });
     const ab = card.querySelector('.archbtn'); let abT;
     ab.addEventListener('click', () => {
-      if (!ab.classList.contains('confirm')) { ab.classList.add('confirm'); ab.textContent = 'לאשר העברה לארכיון?'; abT = setTimeout(() => { ab.classList.remove('confirm'); ab.textContent = 'העברה לארכיון'; }, 4000); return; }
-      clearTimeout(abT); ab.disabled = true; metaAct('archive', lst.title).then((ok) => { if (!ok) { ab.disabled = false; ab.textContent = 'שגיאה, נסו שוב'; ab.classList.remove('confirm'); } });
+      if (!ab.classList.contains('confirm')) { ab.classList.add('confirm'); ab.innerHTML = ICON.check; ab.setAttribute('aria-label', 'לאשר העברה לארכיון'); ab.title = 'לאשר העברה לארכיון'; abT = setTimeout(() => { ab.classList.remove('confirm'); ab.innerHTML = ICON.arch; ab.setAttribute('aria-label', 'העברה לארכיון'); ab.title = 'העברה לארכיון'; }, 4000); return; }
+      clearTimeout(abT); ab.disabled = true; metaAct('archive', lst.title).then((ok) => { if (!ok) { ab.disabled = false; ab.innerHTML = ICON.warn; ab.title = 'שגיאה, נסו שוב'; ab.classList.remove('confirm'); } });
     });
     cards.appendChild(card);
   }
@@ -171,17 +175,18 @@ function render(filter, openTitle) {
   renderArch();
 }
 
+const ICON = { arch: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="4.5" rx="1"/><path d="M5 8.5V19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.5M10 13h4"/></svg>', check: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>', warn: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v5M12 17v.01"/><circle cx="12" cy="12" r="9"/></svg>', undo: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>' };
 const ARCH = new Set();
 function renderArch() {
   const arr = DATA.lists.filter((l) => ARCH.has(l.title));
-  $('#archToggle').textContent = 'ארכיון' + (arr.length ? ' (' + arr.length + ')' : '');
+  $('#archToggle').innerHTML = ICON.arch + (arr.length ? '<span class="cnt">' + arr.length + '</span>' : '');
   const pnl = $('#archPanel');
   if (!arr.length) { pnl.innerHTML = '<div class="emptyl">אין רשימות בארכיון.</div>'; return; }
   pnl.innerHTML = '';
   for (const l of arr) {
     const row = document.createElement('div'); row.className = 'arow';
-    row.innerHTML = '<span class="an">' + esc(l.title) + '<span class="am">' + l.items.length + ' פריטים</span></span><button type="button">שחזור</button>';
-    row.querySelector('button').addEventListener('click', (e) => { e.target.disabled = true; metaAct('restore', l.title).then((ok) => { if (!ok) e.target.disabled = false; }); });
+    row.innerHTML = '<span class="an">' + esc(l.title) + '<span class="am">' + l.items.length + ' פריטים</span></span><button type="button" aria-label="שחזור" title="שחזור">' + ICON.undo + '</button>';
+    row.querySelector('button').addEventListener('click', (e) => { const b = e.currentTarget; b.disabled = true; metaAct('restore', l.title).then((ok) => { if (!ok) b.disabled = false; }); });
     pnl.appendChild(row);
   }
 }
@@ -245,7 +250,7 @@ async function addItem(lst, input, btn, msg) {
     for (const c of document.querySelectorAll('.card.open')) {
       if (c.querySelector('.name') && c.querySelector('.name').firstChild.textContent === lst.title) {
         const m = c.querySelector('.addmsg');
-        if (m) { m.textContent = 'נוסף ✓'; m.classList.add('ok'); }
+        if (m) { m.textContent = '✓'; m.classList.add('ok'); }
         break;
       }
     }
